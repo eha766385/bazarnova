@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BazarNova | Online Shopping</title>
+<style>
+:root{--green:#087f5b;--dark:#17352b;--light:#f3f8f5;--muted:#64756d}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,"Noto Sans Bengali",sans-serif;background:var(--light);color:#20342c}
+header{background:var(--dark);color:white;padding:20px 16px;text-align:center}
+header h1{margin:0 0 6px;font-size:28px}header p{margin:0;color:#d4e8de}
+.wrap{max-width:1050px;margin:auto;padding:18px}
+.tools{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+input,select,textarea,button{font:inherit;border-radius:9px;padding:11px;border:1px solid #cbd8d0}
+.tools input{flex:1;min-width:180px}
+button{background:var(--green);color:white;border:0;cursor:pointer;font-weight:700}
+button:disabled{opacity:.5;cursor:not-allowed}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:13px}
+.product,.panel{background:white;border:1px solid #e0e9e3;border-radius:13px;padding:14px;box-shadow:0 2px 8px #183b2910}
+.product .emoji{font-size:42px;text-align:center;background:#eff7f1;border-radius:10px;padding:14px}
+.product h3{font-size:16px;margin:10px 0 5px}.price{color:var(--green);font-weight:700;margin:7px 0}
+.product button{width:100%;margin-top:7px}
+h2{font-size:21px;margin:24px 0 12px}
+.panel{margin-top:18px}
+.cartline{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid #edf1ee}
+.cartline button{padding:5px 9px;background:#b33d3d}
+.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.formgrid input,.formgrid textarea{width:100%}.formgrid textarea{grid-column:1/-1;min-height:75px}
+.total{font-size:18px;font-weight:700;margin:12px 0}
+.note{font-size:13px;color:var(--muted);line-height:1.5}
+footer{text-align:center;padding:22px;color:var(--muted);font-size:13px}
+@media(max-width:520px){.formgrid{grid-template-columns:1fr}.formgrid textarea{grid-column:auto}}
+</style>
+</head>
+<body>
+<header><h1>🛍️ BazarNova</h1><p>আপনার পছন্দের পণ্য, সহজে অর্ডার করুন</p></header>
+<main class="wrap">
+  <div class="tools">
+    <input id="search" type="search" placeholder="পণ্য খুঁজুন..." aria-label="পণ্য খুঁজুন">
+    <select id="category" aria-label="ক্যাটাগরি">
+      <option value="all">সব পণ্য</option><option value="মোবাইল">মোবাইল</option><option value="ফ্যাশন">ফ্যাশন</option><option value="লাইফস্টাইল">লাইফস্টাইল</option><option value="ঘর">ঘর</option>
+    </select>
+  </div>
+  <h2>আমাদের পণ্য</h2>
+  <section class="grid" id="products"></section>
+  <section class="panel">
+    <h2 style="margin-top:0">🛒 আপনার কার্ট</h2>
+    <div id="cart"><p class="note">এখনো কোনো পণ্য যোগ করা হয়নি।</p></div>
+    <div class="total" id="total">মোট: ৳০</div>
+    <h2>অর্ডারের তথ্য</h2>
+    <div class="formgrid">
+      <input id="customer" placeholder="আপনার নাম" autocomplete="name">
+      <input id="phone" placeholder="আপনার ফোন নম্বর" inputmode="tel" autocomplete="tel">
+      <textarea id="address" placeholder="সম্পূর্ণ ডেলিভারি ঠিকানা"></textarea>
+    </div>
+    <p class="note">WhatsApp-এ অর্ডারের বার্তা তৈরি হবে। WhatsApp খুললে নিজে Send চাপতে হবে।</p>
+    <button id="order" style="width:100%">WhatsApp-এ অর্ডার পাঠান</button>
+    <p class="note">দোকানের WhatsApp নম্বর সেট করতে নিচের কোডে SHOP_WHATSAPP নম্বরটি আপনার দোকানের নম্বর দিয়ে বদলান। নম্বরটি 8801XXXXXXXXX ফরম্যাটে লিখবেন—প্লাস বা স্পেস ছাড়া।</p>
+  </section>
+</main>
+<footer>© BazarNova — Online Shopping</footer>
+<script>
+/* দোকানের মালিক/অভিভাবক এই নম্বরটি নিজের দোকানের WhatsApp নম্বর দিয়ে বদলাবেন।
+   ফরম্যাট: বাংলাদেশের নম্বরের শুরুতে 88, যেমন 8801XXXXXXXXX */
+const SHOP_WHATSAPP = "8801XXXXXXXXX";
+
+const products = [
+ {id:1,name:"Bluetooth Earbuds",price:550,cat:"মোবাইল",emoji:"🎧"},
+ {id:2,name:"Mobile Cover",price:150,cat:"মোবাইল",emoji:"📱"},
+ {id:3,name:"Fast Charger",price:350,cat:"মোবাইল",emoji:"🔌"},
+ {id:4,name:"T-Shirt",price:450,cat:"ফ্যাশন",emoji:"👕"},
+ {id:5,name:"Wrist Watch",price:650,cat:"ফ্যাশন",emoji:"⌚"},
+ {id:6,name:"Wallet",price:250,cat:"ফ্যাশন",emoji:"👛"},
+ {id:7,name:"Water Bottle",price:220,cat:"লাইফস্টাইল",emoji:"🧴"},
+ {id:8,name:"Kitchen Organizer",price:350,cat:"ঘর",emoji:"🧺"},
+ {id:9,name:"Sunglasses",price:300,cat:"ফ্যাশন",emoji:"🕶️"},
+ {id:10,name:"Mobile Stand",price:180,cat:"মোবাইল",emoji:"📲"}
+];
+const cart = {};
+const taka = n => "৳" + n.toLocaleString("en-US");
+function renderProducts(){
+ const q=document.getElementById("search").value.trim().toLowerCase();
+ const c=document.getElementById("category").value;
+ const list=products.filter(p=>(c==="all"||p.cat===c)&&p.name.toLowerCase().includes(q));
+ document.getElementById("products").innerHTML=list.map(p=>`
+  <article class="product"><div class="emoji">${p.emoji}</div><h3>${p.name}</h3>
+  <div class="note">${p.cat}</div><div class="price">${taka(p.price)}</div>
+  <button onclick="addToCart(${p.id})">কার্টে যোগ করুন</button></article>`).join("") || "<p>কোনো পণ্য পাওয়া যায়নি।</p>";
+}
+function addToCart(id){cart[id]=(cart[id]||0)+1;renderCart()}
+function removeFromCart(id){if(cart[id]>1)cart[id]--;else delete cart[id];renderCart()}
+function renderCart(){
+ const entries=products.filter(p=>cart[p.id]);
+ document.getElementById("cart").innerHTML=entries.length?entries.map(p=>`
+ <div class="cartline"><span>${p.name} × ${cart[p.id]} — ${taka(p.price*cart[p.id])}</span>
+ <button onclick="removeFromCart(${p.id})" aria-label="${p.name} থেকে একটি কমান">−</button></div>`).join(""):"<p class='note'>এখনো কোনো পণ্য যোগ করা হয়নি।</p>";
+ const total=entries.reduce((s,p)=>s+p.price*cart[p.id],0);
+ document.getElementById("total").textContent="মোট: "+taka(total);
+}
+document.getElementById("search").addEventListener("input",renderProducts);
+document.getElementById("category").addEventListener("change",renderProducts);
+document.getElementById("order").addEventListener("click",()=>{
+ const entries=products.filter(p=>cart[p.id]);
+ const name=document.getElementById("customer").value.trim();
+ const phone=document.getElementById("phone").value.trim();
+ const address=document.getElementById("address").value.trim();
+ if(!entries.length){alert("আগে কার্টে পণ্য যোগ করুন।");return}
+ if(!name||!phone||!address){alert("নাম, ফোন নম্বর ও ঠিকানা পূরণ করুন।");return}
+ if(!/^8801\d{9}$/.test(SHOP_WHATSAPP)){alert("দোকানের WhatsApp নম্বর এখনো সেট করা হয়নি। ওয়েবসাইটের কোডে SHOP_WHATSAPP পরিবর্তন করুন।");return}
+ const lines=entries.map(p=>`${p.name} × ${cart[p.id]} = ${p.price*cart[p.id]} টাকা`);
+ const total=entries.reduce((s,p)=>s+p.price*cart[p.id],0);
+ const msg=`BazarNova অর্ডার%0Aনাম: ${encodeURIComponent(name)}%0Aক্রেতার ফোন: ${encodeURIComponent(phone)}%0Aঠিকানা: ${encodeURIComponent(address)}%0A%0A${encodeURIComponent(lines.join("\n"))}%0Aমোট: ${total} টাকা`;
+ window.open(`https://wa.me/${SHOP_WHATSAPP}?text=${msg}`,"_blank","noopener");
+});
+renderProducts();renderCart();
+</script>
+</body>
+</html>
